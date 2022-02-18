@@ -1,17 +1,35 @@
 import React from "react";
 import Head from "next/head";
 
-import {FileUploader} from "../components"
+import { FileUploader, LineGraph } from "../components";
+import { Render } from "../shared";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
-  const [columns, setColumns] = React.useState<any[]>([]);
-  const [rows, setRows] = React.useState<any[]>([]);
+  const [columns, setColumns] = React.useState<string[]>([]);
+  const [rows, setRows] = React.useState<Array<Array<any>>>([]);
+  const [graphData, setGraphData] = React.useState<any[]>([]);
 
-  const setCSVData = ({rows, columns}: { columns: string[]; rows: string[] | number[] }) => {
+  const setCSVData = ({
+    rows,
+    columns,
+  }: {
+    columns: string[];
+    rows: Array<Array<any>>;
+  }) => {
     setRows(rows);
-    setColumns(columns)
-  }
+    setColumns(columns);
+    const data = transformDataForGraph(rows);
+    setGraphData(data);
+  };
+
+  const transformDataForGraph = (data: Array<Array<any>>) => {
+    const transformedData = data.map(([name, value]) => ({
+      name,
+      value,
+    }));
+    return transformedData;
+  };
 
   return (
     <div className={styles.container}>
@@ -21,6 +39,10 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <FileUploader setCSVData={setCSVData} />
+      <Render
+        condition={columns.length > 0}
+        renderIf={() => <LineGraph data={graphData} />}
+      />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import React from "react";
 import CSVReader from "xlsx";
 
 interface IProps {
-  setCSVData: (data: { columns: string[]; rows: string[] | number[] }) => void;
+  setCSVData: (data: { columns: string[]; rows: Array<Array<any>> }) => void;
 }
 
 export const FileUploader: React.FC<IProps> = ({ setCSVData }) => {
@@ -21,13 +21,18 @@ export const FileUploader: React.FC<IProps> = ({ setCSVData }) => {
       const [workSheetColumns, ...workSheetRows] = workSheetData;
       setCSVData({
         columns: workSheetColumns as string[],
-        rows: workSheetRows as string[],
+        rows: workSheetRows as any[][],
       });
     };
 
     reader.readAsBinaryString(selectedFile);
   };
 
-  return <input type={"file"} onChange={handleFileUpload} />;
+  return (
+    <input
+      type={"file"}
+      onChange={handleFileUpload}
+      accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+    />
+  );
 };
-
